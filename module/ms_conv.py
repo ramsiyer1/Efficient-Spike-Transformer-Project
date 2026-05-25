@@ -1,5 +1,6 @@
 import torch.nn as nn
 from timm.models.layers import DropPath
+from spikingjelly.activation_based import neuron
 from spikingjelly.clock_driven.neuron import (
     MultiStepLIFNode,
     MultiStepParametricLIFNode,
