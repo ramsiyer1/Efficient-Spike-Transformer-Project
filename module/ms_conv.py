@@ -1,3 +1,4 @@
+import torch
 import torch.nn as nn
 from timm.models.layers import DropPath
 from spikingjelly.activation_based import neuron
