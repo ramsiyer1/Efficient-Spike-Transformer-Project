@@ -18,6 +18,42 @@ class Erode(nn.Module):
     def forward(self, x):
         return self.pool(x)
 
+################################# CUSTOM LIF CLASS ################################# # --> New Edits - 25-05-2026
+class CompressedLIFElement(nn.Module): # --> New Edits - 25-05-2026
+    def __init__(self, leak_mem=0.95): # --> New Edits - 25-05-2026
+        super().__init__() # --> New Edits - 25-05-2026
+        self.lif = neuron.LIFNode(tau=1.0, v_threshold=1.0, v_reset=None) # --> New Edits - 25-05-2026
+        self.leak_mem = leak_mem # --> New Edits - 25-05-2026
+        
+    def decompress_tensor(self, compressed_v): # --> New Edits - 25-05-2026       
+        return compressed_v.repeat(1, 2, 1, 1) # --> New Edits - 25-05-2026
+        
+    def compress_tensor(self, expanded_v): # --> New Edits - 25-05-2026        
+        half = expanded_v.size(1) // 2 # --> New Edits - 25-05-2026
+        return (expanded_v[:, :half, :, :] + expanded_v[:, half:, :, :]) / 2 # --> New Edits - 25-05-2026
+
+    def forward(self, x_seq: torch.Tensor): # --> New Edits - 25-05-2026    
+        T, B, C, H, W = x_seq.shape # --> New Edits - 25-05-2026
+        out_spikes = [] # --> New Edits - 25-05-2026
+        
+        if not isinstance(self.lif.v, torch.Tensor) or self.lif.v.shape[0] != B or self.lif.v.shape[2] != H: # --> New Edits - 25-05-2026
+            self.lif.v = torch.zeros((B, C // 2, H, W), device=x_seq.device) # --> New Edits - 25-05-2026 
+
+        for t in range(T): # --> New Edits - 25-05-2026            
+            expanded_v = self.decompress_tensor(self.lif.v) # --> New Edits - 25-05-2026            
+            expanded_v = self.leak_mem * expanded_v + (1 - self.leak_mem) * x_seq[t] # --> New Edits - 25-05-2026            
+            
+            self.lif.v = expanded_v # --> New Edits - 25-05-2026
+            spike = self.lif.neuronal_fire() # --> New Edits - 25-05-2026     
+            #self.lif.v = self.lif.neuronal_reset(spike) # --> New Edits - 25-05-2026 
+            self.lif.neuronal_reset(spike) # --> New Edits - 25-05-2026
+            
+            self.lif.v = self.compress_tensor(self.lif.v) # --> New Edits - 25-05-2026 
+            out_spikes.append(spike) # --> New Edits - 25-05-2026
+            
+        return torch.stack(out_spikes, dim=0) # --> New Edits - 25-05-2026
+
+#################################################################################### # --> New Edits - 25-05-2026
 
 class MS_MLP_Conv(nn.Module):
     def __init__(
