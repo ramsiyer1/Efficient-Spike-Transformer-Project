@@ -1,7 +1,7 @@
-import torch
+import torch # --> New Edits - 25-05-2026
 import torch.nn as nn
 from timm.models.layers import DropPath
-from spikingjelly.activation_based import neuron
+from spikingjelly.activation_based import neuron # --> New Edits - 25-05-2026
 from spikingjelly.clock_driven.neuron import (
     MultiStepLIFNode,
     MultiStepParametricLIFNode,
