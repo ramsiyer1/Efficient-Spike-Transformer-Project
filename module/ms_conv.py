@@ -314,21 +314,24 @@ class MS_SSA_Conv(nn.Module):
         self.q_conv = nn.Conv2d(dim, dim, kernel_size=1, stride=1, bias=False)
         self.q_bn = nn.BatchNorm2d(dim)
         if spike_mode == "lif":
-            self.q_lif = neuron.MultiStepLIFNode(tau=2.0, detach_reset=True, backend="cupy")
+            #self.q_lif = neuron.MultiStepLIFNode(tau=2.0, detach_reset=True, backend="cupy")
+            self.q_lif = CompressedLIFElement(leak_mem=leak_mem)
         elif spike_mode == "plif":
             self.q_lif = neuron.MultiStepParametricLIFNode(init_tau=2.0, detach_reset=True, backend="cupy")
 
         self.k_conv = nn.Conv2d(dim, dim, kernel_size=1, stride=1, bias=False)
         self.k_bn = nn.BatchNorm2d(dim)
         if spike_mode == "lif":
-            self.k_lif = neuron.MultiStepLIFNode(tau=2.0, detach_reset=True, backend="cupy")
+            #self.k_lif = neuron.MultiStepLIFNode(tau=2.0, detach_reset=True, backend="cupy")
+            self.k_lif = CompressedLIFElement(leak_mem=leak_mem)
         elif spike_mode == "plif":
             self.k_lif = neuron.MultiStepParametricLIFNode(init_tau=2.0, detach_reset=True, backend="cupy")
 
         self.v_conv = nn.Conv2d(dim, dim, kernel_size=1, stride=1, bias=False)
         self.v_bn = nn.BatchNorm2d(dim)
         if spike_mode == "lif":
-            self.v_lif = neuron.MultiStepLIFNode(tau=2.0, detach_reset=True, backend="cupy")
+            #self.v_lif = neuron.MultiStepLIFNode(tau=2.0, detach_reset=True, backend="cupy")
+            self.v_lif = CompressedLIFElement(leak_mem=leak_mem)
         elif spike_mode == "plif":
             self.v_lif = neuron.MultiStepParametricLIFNode(init_tau=2.0, detach_reset=True, backend="cupy")
 
