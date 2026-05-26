@@ -1,7 +1,8 @@
 import torch # --> New Edits - 25-05-2026
 import torch.nn as nn
 from timm.models.layers import DropPath
-from spikingjelly.activation_based import neuron # --> New Edits - 25-05-2026
+#from spikingjelly.activation_based import neuron # --> New Edits - 25-05-2026
+from spikingjelly.clock_driven import neuron  # Legacy compatible --> New Edits - 26-05-2026
 from spikingjelly.clock_driven.neuron import (
     MultiStepLIFNode,
     MultiStepParametricLIFNode,
@@ -22,7 +23,7 @@ class Erode(nn.Module):
 class CompressedLIFElement(nn.Module): # --> New Edits - 25-05-2026
     def __init__(self, leak_mem=0.95): # --> New Edits - 25-05-2026
         super().__init__() # --> New Edits - 25-05-2026
-        self.lif = neuron.LIFNode(tau=1.0, v_threshold=1.0, v_reset=None) # --> New Edits - 25-05-2026
+        self.lif = neuron.LIFNode(tau=2.0, v_threshold=1.0, v_reset=None) # --> New Edits - 25-05-2026
         self.leak_mem = leak_mem # --> New Edits - 25-05-2026
         
     def decompress_tensor(self, compressed_v): # --> New Edits - 25-05-2026       
