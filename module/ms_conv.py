@@ -38,18 +38,19 @@ class CompressedLIFElement(nn.Module): # --> New Edits - 25-05-2026
         out_spikes = [] # --> New Edits - 25-05-2026
         
         if not isinstance(self.lif.v, torch.Tensor) or self.lif.v.shape[0] != B or self.lif.v.shape[2] != H: # --> New Edits - 25-05-2026
-            self.lif.v = torch.zeros((B, C // 2, H, W), device=x_seq.device) # --> New Edits - 25-05-2026 
+            #self.lif.v = torch.zeros((B, C // 2, H, W), device=x_seq.device) # --> New Edits - 25-05-2026
+            self.lif.v = torch.zeros((B, C, H, W), device=x_seq.device) # --> New Edits - 25-05-2026
 
         for t in range(T): # --> New Edits - 25-05-2026            
-            expanded_v = self.decompress_tensor(self.lif.v) # --> New Edits - 25-05-2026            
+            #expanded_v = self.decompress_tensor(self.lif.v) # --> New Edits - 25-05-2026   
+            expanded_v = self.lif.v # --> New Edits - 25-05-2026
             expanded_v = self.leak_mem * expanded_v + (1 - self.leak_mem) * x_seq[t] # --> New Edits - 25-05-2026            
             
             self.lif.v = expanded_v # --> New Edits - 25-05-2026
             spike = self.lif.neuronal_fire() # --> New Edits - 25-05-2026     
-            #self.lif.v = self.lif.neuronal_reset(spike) # --> New Edits - 25-05-2026 
             self.lif.neuronal_reset(spike) # --> New Edits - 25-05-2026
             
-            self.lif.v = self.compress_tensor(self.lif.v) # --> New Edits - 25-05-2026 
+            #self.lif.v = self.compress_tensor(self.lif.v) # --> New Edits - 25-05-2026 
             out_spikes.append(spike) # --> New Edits - 25-05-2026
             
         return torch.stack(out_spikes, dim=0) # --> New Edits - 25-05-2026
